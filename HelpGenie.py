@@ -71,7 +71,7 @@ def main():
     button = btn_test()
     
     if button == 200 :
-        CS.playVideo();
+        CS.recordVideo('record')
         
         
 
