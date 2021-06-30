@@ -4,7 +4,7 @@ def recordVideo(fname):
     
     cap = cv2.VideoCapture(0)
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('test.avi',fourcc, 20.0, (640,480))
+    out = cv2.VideoWriter('test.avi',fourcc, 20.0, (1280,720))
 
     while(cap.isOpened()):
         ret, frame = cap.read()
