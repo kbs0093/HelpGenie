@@ -59,7 +59,7 @@ def btn_test(key_word = 'help지니'):
 def main():
 
 
-	# 5초 후 음성 인식 시작
+    # 5초 후 음성 인식 시작
 
     # returnValue = initHelpGenie()
     
@@ -67,18 +67,19 @@ def main():
     #     text = VoiceToText.getVoice2Text()
 
 
-	# 버튼 클릭 (UI 버튼 클릭시 실행 함수)
+    # 버튼 클릭 (UI 버튼 클릭시 실행 함수)
 
     button = btn_test()
     
     if button == 200 :
-        CS.recordVideo('record')
+        CS.recordVideo()
 
 
 
-	# 결과 값 출력
+    # 결과 값 출력
 
-	result = '음성 테스트 데이터입니다 여기를 바꿔주세요'
+    result = '음성 테스트 데이터입니다 여기를 바꿔주세요'
+    print(result)
 
 
 
