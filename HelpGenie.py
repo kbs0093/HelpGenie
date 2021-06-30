@@ -57,21 +57,33 @@ def btn_test(key_word = 'help지니'):
 	return rc
 
 def main():
-    '''
-    returnValue = initHelpGenie()
-    
-    if returnValue == 200:
-        text = VoiceToText.getVoice2Text();
-        
-        if text == '수화 시작':
-            print('수화')
 
-    '''
+
+	# 5초 후 음성 인식 시작
+
+    # returnValue = initHelpGenie()
     
+    # if returnValue == 200:
+    #     text = VoiceToText.getVoice2Text()
+
+
+	# 버튼 클릭 (UI 버튼 클릭시 실행 함수)
+
     button = btn_test()
     
     if button == 200 :
         CS.recordVideo('record')
+
+
+
+	# 결과 값 출력
+
+	result = '음성 테스트 데이터입니다 여기를 바꿔주세요'
+
+
+
+
+
         
         
 

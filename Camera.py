@@ -3,7 +3,7 @@ import time
 cap = cv2.VideoCapture(0)
 cap.set(3, 720) # 윈도우 크기
 cap.set(4, 1080)
-fc = 20.0
+fc = 40.0
 codec = cv2.VideoWriter_fourcc('D', 'I', 'V', 'X')
 count = 99
 while(cap.isOpened()):

@@ -4,7 +4,7 @@ import gigagenieRPC_pb2_grpc
 import user_auth as UA
 import os
 
-def getText2VoiceStream(inText,inFileName):
+def getText2VoiceStream(inText, inFileName):
 
 	channel = grpc.secure_channel('{}:{}'.format(HOST, PORT), UA.getCredentials())
 	stub = gigagenieRPC_pb2_grpc.GigagenieStub(channel)
@@ -24,4 +24,5 @@ def getText2VoiceStream(inText,inFileName):
 			print ("Audio Stream\n\n")
 			writeFile.write(response.audioContent)
 	writeFile.close()
+	
 	return response.resOptions.resultCd
