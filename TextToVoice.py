@@ -4,6 +4,9 @@ import gigagenieRPC_pb2_grpc
 import user_auth as UA
 import os
 
+HOST = 'gate.gigagenie.ai'
+PORT = 4080
+
 def getText2VoiceStream(inText, inFileName):
 
 	channel = grpc.secure_channel('{}:{}'.format(HOST, PORT), UA.getCredentials())

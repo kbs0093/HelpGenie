@@ -79,14 +79,11 @@ def main():
     # 결과 값 출력
 
     result = '음성 테스트 데이터입니다 여기를 바꿔주세요'
-    print(result)
+    output_file = "output.wav"
+    
+    TextToVoice.getText2VoiceStream(result, output_file)
+    MS.play_file(output_file)
 
-
-
-
-
-        
-        
 
 if __name__ == '__main__':
     main()
