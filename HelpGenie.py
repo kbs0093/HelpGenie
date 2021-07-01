@@ -61,10 +61,10 @@ def main():
 
     # 5초 후 음성 인식 시작
 
-    # returnValue = initHelpGenie()
+    returnValue = initHelpGenie()
     
-    # if returnValue == 200:
-    #     text = VoiceToText.getVoice2Text()
+    if returnValue == 200:
+        text = VoiceToText.getVoice2Text()
 
 
     # 버튼 클릭 (UI 버튼 클릭시 실행 함수)
