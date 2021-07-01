@@ -9,6 +9,7 @@ import MicrophoneStream as MS
 import cv2
 import GenieButton
 import CameraStream as CS
+import VideoPlay as VP
 
 KWSID = ['오늘', '지니야', '친구야', '자기야', 'help지니']
 RATE = 16000
@@ -61,10 +62,10 @@ def main():
 
     # 5초 후 음성 인식 시작
 
-    returnValue = initHelpGenie()
+    # returnValue = initHelpGenie()
     
-    if returnValue == 200:
-        text = VoiceToText.getVoice2Text()
+    # if returnValue == 200:
+    #     text = VoiceToText.getVoice2Text()
 
 
     # 버튼 클릭 (UI 버튼 클릭시 실행 함수)
@@ -73,6 +74,11 @@ def main():
     
     #if button == 200 :
     #    CS.recordVideo()
+
+	# 동영상 재생
+
+    fileName = 'handSignal.avi'
+    VP.VideoPlay(fileName)
 
 
 
