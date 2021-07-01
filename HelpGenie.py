@@ -69,10 +69,10 @@ def main():
 
     # 버튼 클릭 (UI 버튼 클릭시 실행 함수)
 
-    button = btn_test()
+    #button = btn_test()
     
-    if button == 200 :
-        CS.recordVideo()
+    #if button == 200 :
+    #    CS.recordVideo()
 
 
 
