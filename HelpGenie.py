@@ -20,7 +20,7 @@ RATE = 16000
 CHUNK = 512
 
 
-
+'''
 class DataDeliv():
     function_dict = dict()
     
@@ -50,6 +50,7 @@ class TimeMeasure(threading.Thread):
     def exit(self):
         print("TimeMeasure thread exit")
         self.is_on = False
+'''
 
 def detect():
     with MS.MicrophoneStream(RATE, CHUNK) as stream:
@@ -94,23 +95,22 @@ def btn_test(key_word = 'help지니'):
     return rc
     
 
-def initInterface():
-    initService()
-    
-    
-    
-    
+
 def initService():
     # 타임 스레드 생성 및 시그널 초기화
+    '''
     time_th = TimeMeasure()
     data_deliv = DataDeliv(time_th)
     ui.data_deliv = data_deliv
+    '''
     
     # UI 출력
     app = ui.QtWidgets.QApplication([""])
     window = ui.MainWindow()
     window.show()
+    #time_th.start()
     sys.exit(app.exec_())
+    
     
     # 안내 음성 재생
     '''
@@ -119,8 +119,6 @@ def initService():
     TextToVoice.getText2VoiceStream(voice_text, output_file)
     MS.play_file(output_file)
     
-    
-    time_th.start()
     '''
     
     
@@ -150,7 +148,7 @@ def main():
 
 	# 동영상 재생
     
-    initInterface()
+    initService()
     
     VP.VideoPlay(fileName)
 

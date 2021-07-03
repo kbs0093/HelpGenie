@@ -4,14 +4,14 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject
 class Signal(QObject):
 	signal_dict = dict()
 	
-	time_exit = pyqtSignal()
+	print_genie_mes = pyqtSignal()
 	
 	def __init__(self):
 		super().__init__()
 		
 	def registSignal(self, class_name):
 		print(class_name.__class__.__name__)
-		if (class_name.__class__.__name__ == "TimeMeasure"):
+		if (class_name.__class__.__name__ == "GenieVoice"):
 			self.time_exit.connect(class_name.exit)
 			
 	def unregistSignal(self, class_name):

@@ -10,14 +10,16 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__()
         self.current_widget = None  # 현재 출력할 화면
         self.setupInterface()
+        self.genie_ob = None # 이 레이어에서 사용할 지니 스레드 객체
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(lambda: self.changeLayer(BlindLayer(self.central_widget), 1280, 720))
+        self.timer.setSingleShot(True)
+        self.action()
 
         # btn connect
-        self.btn_start.clicked.connect(lambda: self.changeLayer(DeafLayer(self.central_widget)))
+        self.btn_start.clicked.connect(lambda: self.changeLayer(DeafLayer(self.central_widget), 1280, 720))
         self.btn_exit.clicked.connect(QtCore.QCoreApplication.quit)
         
-        global data_deliv
-        self.btn_start.clicked.connect(lambda: data_deliv.emit("exit"))
-        self.btn_exit.clicked.connect(lambda: data_deliv.emit("exit"))
         
         
     def setupInterface(self):
@@ -54,26 +56,35 @@ class MainWindow(QtWidgets.QMainWindow):
                                     "background-color: rgb(47, 186, 181);")  # 85 134 125
         self.btn_exit.setText("종료하기")
 
-    def changeLayer(self, new_widget):
+    def changeLayer(self, new_widget, x, y):
+        # timer kill
+        self.timer.stop()
+        self.timer.deleteLater()
+        ##
         if (self.current_widget is not None):
             self.current_widget.hide()
             self.btn_start.hide()
             self.btn_exit.hide()
             self.current_widget = new_widget
 
-        self.resize(1280, 720)
+        self.resize(x, y)
         center_point = QtWidgets.QDesktopWidget().availableGeometry().center()
-        self.setGeometry(center_point.x() - 640, center_point.y() - 360, 1280, 720)
+        self.setGeometry(center_point.x() - x/2, center_point.y() - y/2, x, y)
 
         self.current_widget.show()
         self.repaint()
-
-
+        
+    def action(self):
+        self.genie_ob = genie.GenieVoice("strToVoice", "안녕하세.")
+        self.genie_ob.start()
+        #genie_ob.join()
+        self.timer.start(4000)
+        
+        
 class StartLayer(QtWidgets.QWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.setupInterface()
-        self.action()
 
     def setupInterface(self):
         self.setGeometry(QtCore.QRect(0, 0, 800, 600))
@@ -97,10 +108,6 @@ class StartLayer(QtWidgets.QWidget):
         self.label_genie = QtWidgets.QLabel(self)
         self.label_genie.setPixmap(self.img_genie)
         self.label_genie.setGeometry(80, 150, 520, 230)
-        
-    def action(self):
-        genie_ob = genie.GenieVoice.instance("strToVoice", "안녕하세요. 헬로지니입니다.")
-        genie_ob.start()
 
 
 class DeafLayer(QtWidgets.QWidget):
@@ -170,6 +177,58 @@ class DeafLayer(QtWidgets.QWidget):
 
 
 class BlindLayer(QtWidgets.QWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent):
+        super().__init__(parent)
         self.setupInterface()
+        self.genie_ob = None # 이 레이어에서 사용할 지니 스레드 객체
+        
+        self.action()
+
+    def setupInterface(self):
+        self.setGeometry(QtCore.QRect(0, 0, 1280, 720))
+        
+        # KT 로고
+        self.img_kt = QtGui.QPixmap('image/kt.png')
+        self.label_kt = QtWidgets.QLabel(self)
+        self.label_kt.setPixmap(self.img_kt)
+        self.label_kt.setGeometry(1200, 640, 80, 80)
+        
+        # 아이콘
+        self.img_icon = QtGui.QPixmap('image/icon.png')
+
+        self.label_icon = QtWidgets.QLabel(self)
+        self.label_icon.setPixmap(self.img_icon)
+        self.label_icon.setGeometry(0, 0, 91, 91)
+
+        # 헬프 지니 문구
+        self.label_title1 = QtWidgets.QLabel(self)
+        self.label_title1.setGeometry(QtCore.QRect(100, 0, 250, 90))
+        self.label_title1.setStyleSheet("color: rgb(252, 255, 255);"
+                                        "font: 28pt '맑은 고딕';"
+                                        "font-weight: bold;")
+        self.label_title1.setText("Help Genie")
+
+        # 코리 토리
+        self.img_kt = QtGui.QPixmap('image/kori_tori.png')
+        self.label_kt = QtWidgets.QLabel(self)
+        self.label_kt.setPixmap(self.img_kt)
+        self.label_kt.setGeometry(120, 130, 600, 480)
+
+        # 대화 다이얼로그
+        self.text_dialog = QtWidgets.QTextBrowser(self)
+        self.text_dialog.setGeometry(QtCore.QRect(750, 160, 400, 400))
+        self.text_dialog.setStyleSheet("background-color: rgb(255, 255, 255);"
+                                          "border-style: solid;"
+                                          "border-width: 2px;"
+                                          "font: 12pt '맑은 고딕';"
+                                          "font-weight: bold;")
+        
+    @pyqtSlot(str)
+    def appendText(self, text):
+        self.text_dialog.append(text)
+  
+    def action(self):
+        self.text_dialog.append("헬프지니: 안녕하세요. 헬프지니에요. 이 서비스는 시각장애인분들을 위한 화면이에요.\n")
+        self.text_dialog.append("고객님: 이번 달 요금 조회해주세요.\n")  # 테스트
+        self.genie_ob = genie.GenieVoice("voiceCounsel")
+        self.genie_ob.start()
