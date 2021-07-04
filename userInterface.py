@@ -1,6 +1,8 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5.QtCore import pyqtSignal, pyqtSlot
 
 import genie
+import CameraStream
 
 data_deliv = None
 
@@ -97,7 +99,7 @@ class StartLayer(QtWidgets.QWidget):
 
         # 타이틀
         self.label_title1 = QtWidgets.QLabel(self)
-        self.label_title1.setGeometry(QtCore.QRect(240, 50, 320, 80))
+        self.label_title1.setGeometry(QtCore.QRect(290, 50, 320, 80))
         self.label_title1.setStyleSheet("color: rgb(255, 255, 255);"
                                         "font: 36pt '맑은 고딕';"
                                         "font-weight: bold;")
@@ -114,14 +116,17 @@ class DeafLayer(QtWidgets.QWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.setupInterface()
+        self.camera_ob = None
+        
+        self.action()
 
     def setupInterface(self):
         self.setGeometry(QtCore.QRect(0, 0, 1280, 720))
 
         # KT 로고
-        self.img_kt = QtGui.QPixmap('image/kt.png')
+        self.img_tmp = QtGui.QPixmap('image/kt.png')
         self.label_kt = QtWidgets.QLabel(self)
-        self.label_kt.setPixmap(self.img_kt)
+        self.label_kt.setPixmap(self.img_tmp)
         self.label_kt.setGeometry(1200, 640, 80, 80)
 
         # 아이콘
@@ -139,7 +144,11 @@ class DeafLayer(QtWidgets.QWidget):
                                         "font-weight: bold;")
         self.label_title1.setText("Help Genie")
 
-        # 상담사 안내 화면 (임시 paint 처리)
+        # 코리
+        self.img_tmp = QtGui.QPixmap('image/kori.png')
+        self.label_kori = QtWidgets.QLabel(self)
+        self.label_kori.setPixmap(self.img_tmp)
+        self.label_kori.setGeometry(150, 70, 343, 454)
 
         # 상담사 안내 문구
         self.text_counselor = QtWidgets.QTextBrowser(self)
@@ -149,12 +158,21 @@ class DeafLayer(QtWidgets.QWidget):
                                           "border-width: 2px;"
                                           "font: 12pt '맑은 고딕';"
                                           "font-weight: bold;")
-        self.text_counselor.append("안녕하세요?")
-        self.text_counselor.insertPlainText(" 무엇을 도와드릴까요?")  # 테스트
+        self.text_counselor.insertPlainText("헬프지니: 이 서비스는 청각장애인분들을 위한 화면이에요. 원하시는 서비스를 수어로 입력해주세요.")  # 테스트
 
         # 가운데 라인 (paint 처리)
+        
+        # 토리
+        '''
+        self.img_tmp = QtGui.QPixmap('image/tori.png')
+        self.label_tori = QtWidgets.QLabel(self)
+        self.label_tori.setPixmap(self.img_tmp)
+        self.label_tori.setGeometry(790, 70, 343, 454)
+        '''
 
         # 고객 스트리밍 화면 (임시 paint 처리)
+        self.label_recording = QtWidgets.QLabel(self)
+        #self.label_recording.setGeometry(760, 70, 400, 500)
 
         # 고객 문구
         self.text_customer = QtWidgets.QTextBrowser(self)
@@ -163,17 +181,34 @@ class DeafLayer(QtWidgets.QWidget):
                                          "border-style: solid;"
                                          "border-width: 2px;")
 
+    @pyqtSlot(QtGui.QImage)
+    def printImage(self, image):
+        self.label_recording.setPixmap(QtGui.QPixmap.fromImage(image))
+    
+    @pyqtSlot(str)
+    def appendText(self, text):
+        self.text_counselor.append(text)
+       
+    def action(self):
+        self.camera_ob = CameraStream.Camera()
+        self.camera_ob.setSignal(self)
+        self.camera_ob.start()
+        
     def paintEvent(self, paint_event):  # 자동 호출 함수
         painter = QtGui.QPainter(self)
-        # 상담사 안내 화면
-        painter.fillRect(120, 100, 400, 400, QtGui.QColor(255, 255, 255))
 
         # 가운데 라인
         painter.setPen(QtGui.QPen(QtGui.QColor(47, 186, 181), 6))
         painter.drawLine(640, 60, 640, 660)  # length: 600
 
         # 고객 스트리밍 화면
-        painter.fillRect(760, 100, 400, 400, QtGui.QColor(255, 255, 255))
+        # 토리
+        
+        self.img_tmp = QtGui.QPixmap('image/tori.png')
+        self.label_tori = QtWidgets.QLabel(self)
+        self.label_tori.setPixmap(self.img_tmp)
+        self.label_tori.setGeometry(790, 70, 343, 454)
+        #painter.fillRect(760, 100, 400, 400, QtGui.QColor(255, 255, 255))
 
 
 class BlindLayer(QtWidgets.QWidget):
@@ -212,7 +247,7 @@ class BlindLayer(QtWidgets.QWidget):
         self.img_kt = QtGui.QPixmap('image/kori_tori.png')
         self.label_kt = QtWidgets.QLabel(self)
         self.label_kt.setPixmap(self.img_kt)
-        self.label_kt.setGeometry(120, 130, 600, 480)
+        self.label_kt.setGeometry(100, 130, 600, 480)
 
         # 대화 다이얼로그
         self.text_dialog = QtWidgets.QTextBrowser(self)
@@ -224,11 +259,10 @@ class BlindLayer(QtWidgets.QWidget):
                                           "font-weight: bold;")
         
     @pyqtSlot(str)
-    def appendText(self, text):
+    def appendTextBlind(self, text):
         self.text_dialog.append(text)
   
     def action(self):
-        self.text_dialog.append("헬프지니: 안녕하세요. 헬프지니에요. 이 서비스는 시각장애인분들을 위한 화면이에요.\n")
-        self.text_dialog.append("고객님: 이번 달 요금 조회해주세요.\n")  # 테스트
         self.genie_ob = genie.GenieVoice("voiceCounsel")
+        self.genie_ob.setSignal(self)
         self.genie_ob.start()

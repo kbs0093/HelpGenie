@@ -129,16 +129,6 @@ def initService():
     
 
 def main():
-
-
-    # 5초 후 음성 인식 시작
-
-    # returnValue = initHelpGenie()
-    
-    # if returnValue == 200:
-    #     text = VoiceToText.getVoice2Text()
-
-
     # 버튼 클릭 (UI 버튼 클릭시 실행 함수)
 
     #button = btn_test()
@@ -146,11 +136,10 @@ def main():
     #if button == 200 :
     #    CS.recordVideo()
 
-	# 동영상 재생
     
     initService()
     
-    VP.VideoPlay(fileName)
+    #VP.VideoPlay(fileName)
 
 
     # 결과 값 출력

@@ -4,6 +4,9 @@ import os
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="./kt-helpgenie-mqjf-888ca127377d.json"
 
 def detect_intent_texts(texts):
+    if (texts == "" or texts is None):
+        return ""
+        
 
     project_id = 'kt-helpgenie-mqjf'
     session_id = '123456789'
@@ -11,7 +14,7 @@ def detect_intent_texts(texts):
     session_client = dialogflow.SessionsClient()
 
     session = session_client.session_path(project_id, session_id)
-    print("Session path: {}\n".format(session))
+    #print("Session path: {}\n".format(session))
 
     
     text_input = dialogflow.TextInput(text=texts, language_code=language_code)
@@ -22,6 +25,7 @@ def detect_intent_texts(texts):
         request={"session": session, "query_input": query_input}
     )
 
+    '''
     print("=" * 20)
     print("Query text: {}".format(response.query_result.query_text))
     print(
@@ -31,5 +35,6 @@ def detect_intent_texts(texts):
         )
     )
     print("Fulfillment text: {}\n".format(response.query_result.fulfillment_text))
-
+    '''
+    
     return response.query_result.fulfillment_text

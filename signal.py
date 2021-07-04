@@ -1,22 +1,31 @@
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject
+from PyQt5.QtGui import QImage
 
 
 class Signal(QObject):
-	signal_dict = dict()
-	
-	print_genie_mes = pyqtSignal()
+	appendTextBlind = pyqtSignal(str)
+	appendTextDeaf = pyqtSignal(str)
+	printImage = pyqtSignal(QImage)
+	repaint = pyqtSignal()
 	
 	def __init__(self):
 		super().__init__()
 		
-	def registSignal(self, class_name):
-		print(class_name.__class__.__name__)
-		if (class_name.__class__.__name__ == "GenieVoice"):
-			self.time_exit.connect(class_name.exit)
+	def registSignal(self, class_ob):
+		if (class_ob.__class__.__name__ == "BlindLayer"):
+			self.appendTextBlind.connect(class_ob.appendTextBlind)
+		elif (class_ob.__class__.__name__ == "DeafLayer"):
+			self.printImage.connect(class_ob.printImage)
+			self.repaint.connect(class_ob.repaint)
+			self.appendTextDeaf.connect(class_ob.appendTextDeaf)
 			
 	def unregistSignal(self, class_name):
-		if (class_name.__class__.__name__ == "TimeMeasure"):
-			self.time_exit.disconnect(class_name.exit)
+		if (class_name.__class__.__name__ == "BlindLayer"):
+			self.appendTextBlind.disconnect(class_name.appendTextBlind)
+		elif (class_ob.__class__.__name__ == "DeafLayer"):
+			self.printImage.disconnect(class_ob.printImage)
+			self.repaint.disconnect(class_ob.repaint)
+			self.appendTextDeaf.disconnect(class_ob.appendTextDeaf)
 			
 	def emit(self, function_name: str, *parameter):
 		signal_object = eval("self.{}".format(function_name))

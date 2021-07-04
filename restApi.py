@@ -3,11 +3,14 @@ import requests
 
 def uploadVideo(filename):
 
-    url = 'http://blahblah:8000/upload/'
+    url = 'http://49.247.212.224:8000/upload/'
     video = open(('./' + filename), 'rb')
 
-    upload = {'file': video}
+    upload = { 'document' : video}
 
-    res = requests.post(url, file_name = upload)
+    res = requests.post(url, files = upload)
 
+    print(res)
     return res
+
+uploadVideo('handSignal.avi')

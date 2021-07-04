@@ -22,9 +22,10 @@ def getText2VoiceStream(inText, inFileName):
 	for response in stub.getText2VoiceStream(message):
 		#print("die?")
 		if response.HasField("resOptions"):
-			print ("\n\nResVoiceResult: %d" %(response.resOptions.resultCd))
+			pass
+			#print ("\n\nResVoiceResult: %d" %(response.resOptions.resultCd))
 		if response.HasField("audioContent"):
-			print ("Audio Stream\n\n")
+			#print ("Audio Stream\n\n")
 			writeFile.write(response.audioContent)
 	writeFile.close()
 	
