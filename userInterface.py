@@ -118,6 +118,9 @@ class DeafLayer(QtWidgets.QWidget):
         self.setupInterface()
         self.camera_ob = None
         
+        # btn connect
+        self.btn_exit.clicked.connect(self.exit)
+        
         self.action()
 
     def setupInterface(self):
@@ -143,12 +146,25 @@ class DeafLayer(QtWidgets.QWidget):
                                         "font: 28pt '맑은 고딕';"
                                         "font-weight: bold;")
         self.label_title1.setText("Help Genie")
+        
+        # 종료 버튼
+        self.btn_exit = QtWidgets.QPushButton(self)
+        self.btn_exit.setGeometry(QtCore.QRect(1100, 20, 150, 40))
+        self.btn_exit.setStyleSheet("font: 11pt '맑은 고딕';"
+                                    "color: rgb(255, 255, 255);"
+                                    "font-weight: bold;"
+                                    "border-style: solid;"
+                                    "border-width: 2px;"
+                                    "border-radius: 10px;"
+                                    "background-color: rgb(47, 186, 181);")  # 85 134 125
+        self.btn_exit.setText("종료하기")
 
         # 코리
         self.img_tmp = QtGui.QPixmap('image/kori.png')
         self.label_kori = QtWidgets.QLabel(self)
         self.label_kori.setPixmap(self.img_tmp)
         self.label_kori.setGeometry(150, 70, 343, 454)
+        
 
         # 상담사 안내 문구
         self.text_counselor = QtWidgets.QTextBrowser(self)
@@ -178,7 +194,9 @@ class DeafLayer(QtWidgets.QWidget):
         self.text_customer.setGeometry(QtCore.QRect(760, 550, 400, 120))
         self.text_customer.setStyleSheet("background-color: rgb(255, 255, 255);"
                                          "border-style: solid;"
-                                         "border-width: 2px;")
+                                         "border-width: 2px;"
+                                         "font: 12pt '맑은 고딕';"
+                                         "font-weight: bold;")
 
     @pyqtSlot(QtGui.QImage)
     def printImage(self, image):
@@ -188,6 +206,10 @@ class DeafLayer(QtWidgets.QWidget):
     def appendTextDeaf(self, text):
         self.text_counselor.append(text)
         
+    @pyqtSlot(str)
+    def appendTextDeaf2(self, text):
+        self.text_customer.append(text)
+        
     @pyqtSlot(bool)
     def startRecord(self, is_start):
         if is_start:
@@ -196,6 +218,13 @@ class DeafLayer(QtWidgets.QWidget):
         else:
             self.label_recording.hide()
             self.label_tori.show()
+            
+    def exit(self):
+        import sys
+        print("wait camera thread quiting...")
+        self.camera_ob.is_on = False
+        self.camera_ob.nonDefine()
+        sys.exit()
        
     def action(self):
         self.camera_ob = CameraStream.Camera("counsel")

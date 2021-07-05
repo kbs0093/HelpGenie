@@ -5,6 +5,7 @@ from PyQt5.QtGui import QImage
 class Signal(QObject):
 	appendTextBlind = pyqtSignal(str)
 	appendTextDeaf = pyqtSignal(str)
+	appendTextDeaf2 = pyqtSignal(str)
 	printImage = pyqtSignal(QImage)
 	startRecord = pyqtSignal(bool)
 	
@@ -18,6 +19,7 @@ class Signal(QObject):
 			self.printImage.connect(class_ob.printImage)
 			self.startRecord.connect(class_ob.startRecord)
 			self.appendTextDeaf.connect(class_ob.appendTextDeaf)
+			self.appendTextDeaf2.connect(class_ob.appendTextDeaf2)
 			
 	def unregistSignal(self, class_name):
 		if (class_name.__class__.__name__ == "BlindLayer"):
@@ -26,6 +28,7 @@ class Signal(QObject):
 			self.printImage.disconnect(class_ob.printImage)
 			self.startRecord.disconnect(class_ob.startRecord)
 			self.appendTextDeaf.disconnect(class_ob.appendTextDeaf)
+			self.appendTextDeaf2.disconnect(class_ob.appendTextDeaf2)
 			
 	def emit(self, function_name: str, *parameter):
 		signal_object = eval("self.{}".format(function_name))

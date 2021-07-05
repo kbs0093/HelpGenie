@@ -136,8 +136,8 @@ def main():
     #if button == 200 :
     #    CS.recordVideo()
 
-    
     initService()
+    
     
     #VP.VideoPlay(fileName)
 
