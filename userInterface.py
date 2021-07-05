@@ -158,21 +158,20 @@ class DeafLayer(QtWidgets.QWidget):
                                           "border-width: 2px;"
                                           "font: 12pt '맑은 고딕';"
                                           "font-weight: bold;")
-        self.text_counselor.insertPlainText("헬프지니: 이 서비스는 청각장애인분들을 위한 화면이에요. 원하시는 서비스를 수어로 입력해주세요.")  # 테스트
 
         # 가운데 라인 (paint 처리)
         
         # 토리
-        '''
         self.img_tmp = QtGui.QPixmap('image/tori.png')
         self.label_tori = QtWidgets.QLabel(self)
         self.label_tori.setPixmap(self.img_tmp)
         self.label_tori.setGeometry(790, 70, 343, 454)
-        '''
 
         # 고객 스트리밍 화면 (임시 paint 처리)
         self.label_recording = QtWidgets.QLabel(self)
-        #self.label_recording.setGeometry(760, 70, 400, 500)
+        self.label_recording.setGeometry(760, 70, 400, 500)
+        self.label_recording.hide()
+        
 
         # 고객 문구
         self.text_customer = QtWidgets.QTextBrowser(self)
@@ -186,11 +185,20 @@ class DeafLayer(QtWidgets.QWidget):
         self.label_recording.setPixmap(QtGui.QPixmap.fromImage(image))
     
     @pyqtSlot(str)
-    def appendText(self, text):
+    def appendTextDeaf(self, text):
         self.text_counselor.append(text)
+        
+    @pyqtSlot(bool)
+    def startRecord(self, is_start):
+        if is_start:
+            self.label_tori.hide()
+            self.label_recording.show()
+        else:
+            self.label_recording.hide()
+            self.label_tori.show()
        
     def action(self):
-        self.camera_ob = CameraStream.Camera()
+        self.camera_ob = CameraStream.Camera("counsel")
         self.camera_ob.setSignal(self)
         self.camera_ob.start()
         
@@ -200,15 +208,7 @@ class DeafLayer(QtWidgets.QWidget):
         # 가운데 라인
         painter.setPen(QtGui.QPen(QtGui.QColor(47, 186, 181), 6))
         painter.drawLine(640, 60, 640, 660)  # length: 600
-
-        # 고객 스트리밍 화면
-        # 토리
         
-        self.img_tmp = QtGui.QPixmap('image/tori.png')
-        self.label_tori = QtWidgets.QLabel(self)
-        self.label_tori.setPixmap(self.img_tmp)
-        self.label_tori.setGeometry(790, 70, 343, 454)
-        #painter.fillRect(760, 100, 400, 400, QtGui.QColor(255, 255, 255))
 
 
 class BlindLayer(QtWidgets.QWidget):

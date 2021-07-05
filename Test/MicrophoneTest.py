@@ -8,4 +8,4 @@ for index in range(po.get_device_count()):
 
     #if desc["name"] == "record":
 
-    print "DEVICE: %s  INDEX:  %s  RATE:  %s " %  (desc["name"], index,  int(desc["defaultSampleRate"]))
+    print("DEVICE: %s  INDEX:  %s  RATE:  %s " %  (desc["name"], index,  int(desc["defaultSampleRate"])))

@@ -11,6 +11,6 @@ def uploadVideo(filename):
     res = requests.post(url, files = upload)
 
     print(res)
+    
+    video.close()
     return res
-
-uploadVideo('handSignal.avi')

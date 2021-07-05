@@ -6,7 +6,7 @@ class Signal(QObject):
 	appendTextBlind = pyqtSignal(str)
 	appendTextDeaf = pyqtSignal(str)
 	printImage = pyqtSignal(QImage)
-	repaint = pyqtSignal()
+	startRecord = pyqtSignal(bool)
 	
 	def __init__(self):
 		super().__init__()
@@ -16,7 +16,7 @@ class Signal(QObject):
 			self.appendTextBlind.connect(class_ob.appendTextBlind)
 		elif (class_ob.__class__.__name__ == "DeafLayer"):
 			self.printImage.connect(class_ob.printImage)
-			self.repaint.connect(class_ob.repaint)
+			self.startRecord.connect(class_ob.startRecord)
 			self.appendTextDeaf.connect(class_ob.appendTextDeaf)
 			
 	def unregistSignal(self, class_name):
@@ -24,7 +24,7 @@ class Signal(QObject):
 			self.appendTextBlind.disconnect(class_name.appendTextBlind)
 		elif (class_ob.__class__.__name__ == "DeafLayer"):
 			self.printImage.disconnect(class_ob.printImage)
-			self.repaint.disconnect(class_ob.repaint)
+			self.startRecord.disconnect(class_ob.startRecord)
 			self.appendTextDeaf.disconnect(class_ob.appendTextDeaf)
 			
 	def emit(self, function_name: str, *parameter):
