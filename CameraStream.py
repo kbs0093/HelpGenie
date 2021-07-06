@@ -44,17 +44,17 @@ class Camera(threading.Thread):
             print("keyword: {}".format(keyword))
             
             
-            if (keyword == "가입"):
+            if (keyword == "가입"): # 테스트 완료
                 self.serviceJoin()
-            elif (keyword == "조회"):
+            elif (keyword == "조회"): # 테스트 완료
                 self.serviceCheck(False)
-            elif (keyword == "이번달 조회"): # 학습
+            elif (keyword == "이번달 조회"): # 테스트 완료
                 self.serviceCheck(True)
-            elif (keyword == "서비스 조회"): # 학습
+            elif (keyword == "서비스 조회"): # 잘 안됨 (service1)
                 self.serviceService()
-            elif (keyword == "변경"):
+            elif (keyword == "변경"): # 테스트 완료
                 self.serviceChange()
-            elif (keyword == "납부"): # 학습
+            elif (keyword == "납부"): # 테스트 완료
                 self.servicePay()
             else:
                 self.genieTalk("죄송해요. 다시 한 번 말씀해주세요.")
@@ -77,7 +77,7 @@ class Camera(threading.Thread):
         birth.append(result_data)
         self.customTalk(result_data)
         
-        self.genieTalk("어떤 요금를 이용하시겠어요? 수어 번호로 입력해주세요.")
+        self.genieTalk("어떤 요금제를 이용하시겠어요? 수어 번호로 입력해주세요.")
         self.genieTalk("1. 55 요금제")
         self.genieTalk("2. 시즌 초이스 요금제")
         self.genieTalk("3. 슈퍼 플랜 요금제")
@@ -128,7 +128,7 @@ class Camera(threading.Thread):
         result_data = restApi.uploadVideo(self.file_name, "num")
         self.customTalk(result_data)
         choice_num = result_data
-        choice_dict = {'1': '5번5', '2': '시즌 초이스', '3': '슈퍼 플랜'}
+        choice_dict = {'1': '55', '2': '시즌 초이스', '3': '슈퍼 플랜'}
         
         if (choice_num not in choice_dict):
             self.genieTalk("죄송해요. 무슨 말씀인지 못 알아들었어요.")
