@@ -30,7 +30,7 @@ class Camera(threading.Thread):
         self.genieTalk("이 서비스는 청각장애인분들을 위한 화면이에요. 원하시는 서비스를 수어로 입력해주세요.")
         
         while self.is_on:
-            #time.sleep(5)
+            time.sleep(1)
             self.recordVideo(10)
             # 영상을 서버 전송
             
@@ -64,7 +64,7 @@ class Camera(threading.Thread):
             self.genieTalk("상담을 계속 진행하고 싶으시면 원하시는 서비스를 수어로 입력해주시고, 종료하시고 싶으시면 종료버튼을 눌러주세요.")
 
     def serviceJoin(self):
-        self.genieTalk("가입절차를 시작하겠습니다. 생년월일을 수어로 입력해주세요. (숫자 두 번)")
+        self.genieTalk("가입절차를 시작하겠습니다. 가입정보를 입력해주세요. (숫자 두 번)")
         birth = list()
         time.sleep(2)
         self.recordVideo(5)
@@ -77,7 +77,7 @@ class Camera(threading.Thread):
         birth.append(result_data)
         self.customTalk(result_data)
         
-        self.genieTalk("어떤 서비스를 이용하시겠어요? 수어 번호로 입력해주세요.")
+        self.genieTalk("어떤 요금를 이용하시겠어요? 수어 번호로 입력해주세요.")
         self.genieTalk("1. 55 요금제")
         self.genieTalk("2. 시즌 초이스 요금제")
         self.genieTalk("3. 슈퍼 플랜 요금제")
@@ -86,7 +86,7 @@ class Camera(threading.Thread):
         result_data = restApi.uploadVideo(self.file_name, "num")
         self.customTalk(result_data)
         choice_num = result_data
-        choice_dict = {'1': '5번5', '2': '시즌 초이스', '3': '슈퍼 플랜'}
+        choice_dict = {'1': '55', '2': '시즌 초이스', '3': '슈퍼 플랜'}
         
         if (choice_num not in choice_dict):
             self.genieTalk("죄송해요. 무슨 말씀인지 못 알아들었어요.")
@@ -97,25 +97,26 @@ class Camera(threading.Thread):
     def serviceCheck(self, have_this):
         if (not have_this):
             self.genieTalk("몇 월 요금제를 조회하시겠어요? (숫자 두 번)")
-            birth = list()
+            month = list()
             time.sleep(2)
             self.recordVideo(5)
             result_data = restApi.uploadVideo(self.file_name, "num")
             self.customTalk(result_data)
-            birth.append(result_data)
+            month.append(result_data)
             self.recordVideo(5)
             result_data = restApi.uploadVideo(self.file_name, "num")
             self.customTalk(result_data)
-            birth.append(result_data)
-            self.genieTalk("고객님께서 {}월 납부하실 금액은 65,000원 입니다.".format(birth[0:]))
+            month.append(result_data)
+            month_result = month[0]+month[1]
+            self.genieTalk("고객님께서 {}월 납부하실 금액은 65,000원 입니다.".format(month_result))
         else:
             self.genieTalk("고객님께서 7월 납부하실 금액은 65,000원 입니다.")
         
     def serviceService(self):
         self.genieTalk("고객님이 가입하신 서비스는 다음과 같습니다.")
-        self.genieTalk("1. 지니 뮤직")
-        self.genieTalk("2. 콜 투 유")
-        self.genieTalk("3. KT Seezn")
+        self.genieTalk("1. KT Seezn 서비스")
+        self.genieTalk("2. 링투유 서비스")
+        self.genieTalk("3. 지니 뮤직 서비스")
         
     def serviceChange(self):
         self.genieTalk("변경하실 요금제를 수어 번호로 입력해주세요. (숫자 한 번)")

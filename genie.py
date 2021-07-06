@@ -17,6 +17,7 @@ class GenieVoice(threading.Thread):
         self.signal_ob = signal.Signal()
         #self.return_val = None # function return pointer
         #print("genie instance created: {}".format(self))
+        self.cnt = -1
         
     def setSignal(self, class_ob): #시그널을 쓰지않는 객체의일 수도 있기때문에 정의
         self.signal_ob = signal.Signal()
@@ -31,11 +32,15 @@ class GenieVoice(threading.Thread):
         MS.play_file(output_file)
         
     def voiceToStr(self): #음성 받아서 핵심 키워드 추출
-        return VoiceToText.getVoice2Text()
+        ##### To do #####
+        tempList = []
+        self.cnt += 1
+        return tempList[self.cnt]
+        #return VoiceToText.getVoice2Text()
         
     def genieTalk(self, text: str, is_voice = True):
         self.signal_ob.emit("appendTextBlind", "헬프지니: "+text)
-        if isVoice:
+        if is_voice:
             self.strToVoice(text)
         
     def voiceCounsel(self):
@@ -71,7 +76,8 @@ class GenieVoice(threading.Thread):
             self.genieTalk("상담을 계속 진행하고 싶으시면 원하시는 서비스를 말씀해주세요.")
  
     def serviceJoin(self):
-        self.genieTalk("가입절차를 시작하겠습니다. 생년월일을 말씀해주세요.")
+        self.genieTalk("가입절차를 시작하겠습니다. 가입정보를 말씀해주세요.")
+        return
         voice_text = self.voiceToStr()
         self.signal_ob.emit("appendTextBlind", "고객님: {}.".format(voice_text))
         
@@ -93,6 +99,7 @@ class GenieVoice(threading.Thread):
     def serviceCheck(self, have_this):
         if (not have_this):
             self.genieTalk("몇 월 요금제를 조회하시겠어요?") # ex) 1월, 2월, 3월
+            return
             voice_text = self.voiceToStr()
             self.signal_ob.emit("appendTextBlind", "고객님: {}.".format(voice_text))
             
@@ -100,14 +107,16 @@ class GenieVoice(threading.Thread):
             self.genieTalk("고객님께서 {}월 납부하실 금액은 65,000원 입니다.".format(result_data))
         else:
             self.genieTalk("고객님께서 7월 납부하실 금액은 65,000원 입니다.")
+            return
         
     def serviceService(self):
         self.genieTalk("고객님이 가입하신 서비스는 다음과 같습니다.")
-        self.genieTalk("1. 지니 뮤직\n2. 시콜 투 유\n3. KT Seezn", False)
+        self.genieTalk("\n1. 지니 뮤직\n2. 시콜 투 유\n3. KT Seezn", False)
         
     def serviceChange(self):
         self.genieTalk("변경하실 요금제를 번호로 말씀해주세요.")
-        self.genieTalk("1. 55 요금제\n2. 시즌 초이스 요금제\n3. 슈퍼 플랜 요금", False)
+        return
+        self.genieTalk("\n1. 55 요금제\n2. 시즌 초이스 요금제\n3. 슈퍼 플랜 요금", False)
         
         voice_text = self.voiceToStr()
         self.signal_ob.emit("appendTextBlind", "고객님: {}.".format(voice_text))
@@ -123,6 +132,7 @@ class GenieVoice(threading.Thread):
         
     def servicePay(self):
         self.genieTalk("등록하신 카드 비밀번호 두 자리를 말씀해주세요.")
+        return
         voice_text = self.voiceToStr()
         self.signal_ob.emit("appendTextBlind", "고객님: {}.".format(voice_text))
         

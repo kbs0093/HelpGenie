@@ -26,7 +26,9 @@ class MainWindow(QtWidgets.QMainWindow):
         
     def setupInterface(self):
         self.setWindowTitle("Help Genie Project :)")
-        self.resize(800, 600)
+        center_point = QtWidgets.QDesktopWidget().availableGeometry().center()
+        self.setGeometry(center_point.x() - 800/2, center_point.y() - 600/2, 800, 600)
+        #self.resize(800, 600)
 
         self.central_widget = QtWidgets.QWidget(self)
         self.central_widget.setStyleSheet("background-color: rgb(149, 228, 223)")
