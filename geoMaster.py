@@ -13,10 +13,10 @@ def openMap(loc):
     elif (loc == 'daejeon'):
         webbrowser.open('file://' + os.path.realpath('./Geomaster/daejeon.html'))
 
-    else:
+    elif (loc == 'kwangju'):
         webbrowser.open('file://' + os.path.realpath('./Geomaster/kwangju.html'))
 
-    return null
+    return
 
 
     

@@ -5,6 +5,7 @@ import MicrophoneStream as MS
 import threading
 import time
 import sys
+import geoMaster as GM
 
 import signal
 
@@ -15,9 +16,6 @@ class GenieVoice(threading.Thread):
         self.function_name = function_name
         self.parameter = parameter
         self.signal_ob = signal.Signal()
-        #self.return_val = None # function return pointer
-        #print("genie instance created: {}".format(self))
-        self.cnt = -1
         
     def setSignal(self, class_ob): #시그널을 쓰지않는 객체의일 수도 있기때문에 정의
         self.signal_ob = signal.Signal()
@@ -32,12 +30,6 @@ class GenieVoice(threading.Thread):
         MS.play_file(output_file)
         
     def voiceToStr(self): #음성 받아서 핵심 키워드 추출
-        ##### To do #####
-        '''
-        tempList = []
-        self.cnt += 1
-        return tempList[self.cnt]
-        '''
         return VoiceToText.getVoice2Text()
         
     def genieTalk(self, text: str, is_voice = True):
@@ -66,6 +58,8 @@ class GenieVoice(threading.Thread):
                 self.serviceChange()
             elif (keyword == "납부"): # 학습
                 self.servicePay()
+            elif (keyword == "대리점"):
+                self.serviceOffice()
             elif (keyword == "종료"):
                 self.genieTalk("서비스를 종료합니다. 좋은 하루 되세요.")
                 self.is_one = False
@@ -83,7 +77,7 @@ class GenieVoice(threading.Thread):
         self.signal_ob.emit("appendTextBlind", "고객님: {}.".format(voice_text))
         
         self.genieTalk("가입하실 수 있는 요금제를 말씀 드릴게요.")
-        self.genieTalk("1번 55 요금제. 2번 시즌 초이스 요금제. 3번 슈퍼 플랜 요금제. 가입하고 싶은 요금제를 번호로 말씀해주세요.")
+        self.genieTalk("1번 55 요금제.\n 2번 시즌 초이스 요금제.\n 3번 슈퍼 플랜 요금제.\n 가입하고 싶은 요금제를 번호로 말씀해주세요.")
  
         voice_text = self.voiceToStr()
         self.signal_ob.emit("appendTextBlind", "고객님: {}.".format(voice_text))
@@ -120,11 +114,10 @@ class GenieVoice(threading.Thread):
         
     def serviceService(self):
         self.genieTalk("고객님이 가입하신 서비스는 다음과 같습니다.")
-        self.genieTalk("1번 지니 뮤직. 2번 콜투유 3번 KT Seezn 입니다.")
+        self.genieTalk("1번 지니 뮤직.\n 2번 콜투유.\n 3번 KT Seezn 입니다.")
         
     def serviceChange(self):
-        self.genieTalk("변경하실 수 있는 요금제를 말씀 드릴게요. 1번 55 요금제. 2번 시즌 초이스 요금제. 3번 슈퍼 플랜 요금제.")
-        self.genieTalk("변경하시고 싶은 요금제를 번호로 말씀해주세요.")
+        self.genieTalk("변경하실 수 있는 요금제를 말씀 드릴게요.\n 1번 55 요금제.\n 2번 시즌 초이스 요금제.\n 3번 슈퍼 플랜 요금제.\n변경하시고 싶은 요금제를 번호로 말씀해주세요.")
         
         voice_text = self.voiceToStr()
         self.signal_ob.emit("appendTextBlind", "고객님: {}.".format(voice_text))
@@ -148,6 +141,27 @@ class GenieVoice(threading.Thread):
         self.signal_ob.emit("appendTextBlind", "고객님: {}.".format(voice_text))
         
         self.genieTalk("이번 달 납부하실 금액은 65,000원입니다. 등록하신 카드로 결제 완료되었습니다. 감사합니다.")
+        
+    def serviceOffice(self):
+        self.genieTalk("어떤 대리점의 위치를 확인하시겠어요?\n1번 인천 지점\n2번 대전 지점\n3번 광주 지점\n확인하시고 싶은 대리점 위치를 번호로 말씀해주세요.")
+        
+        voice_text = self.voiceToStr()
+        self.signal_ob.emit("appendTextBlind", "고객님: {}.".format(voice_text))
+        
+        choice_num = [i for i in " ".join(voice_text).split() if i.isdigit()]
+        if (len(choice_num) == 0):
+            self.genieTalk("죄송해요. 무슨 말씀인지 못 알아들었어요.")
+            return
+        choice_num = choice_num[0]
+        
+        office_dict = {'1': 'incheon', '2': 'daejeon', '3': 'kwangju'}
+        if (choice_num not in office_dict):
+            self.genieTalk("죄송해요. 무슨 말씀인지 못 알아들었어요.")
+            return
+        GM.openMap(office_dict[choice_num])
+            
+        self.genieTalk("해당 대리점의 위치를 인터넷 창으로 띄워드렸어요.")
+        time.sleep(10)
     
     
             

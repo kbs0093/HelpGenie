@@ -5,6 +5,7 @@ import threading
 import signal
 import restApi
 import dialogFlow
+import geoMaster as GM
 
 
 
@@ -30,13 +31,11 @@ class Camera(threading.Thread):
         self.genieTalk("이 서비스는 청각장애인분들을 위한 화면이에요. 원하시는 서비스를 수어로 입력해주세요.")
         
         while self.is_on:
-            time.sleep(1)
-            self.recordVideo(10)
+            time.sleep(4)
+            self.recordVideo(12)
             # 영상을 서버 전송
             
             result_data = restApi.uploadVideo(self.file_name, "upload")
-            #result_data = restApi.uploadVideo(self.file_name, "upload")
-            #result_data = "Error"
             self.customTalk(result_data)
             # 서버로부터 결과값 받기
             # 결과값을 바탕으로 서비스 제공
@@ -56,11 +55,13 @@ class Camera(threading.Thread):
                 self.serviceChange()
             elif (keyword == "납부"): # 테스트 완료
                 self.servicePay()
+            elif (keyword == "대리점"):
+                self.serviceOffice()
             else:
                 self.genieTalk("죄송해요. 다시 한 번 말씀해주세요.")
                 continue
             
-            time.sleep(4)
+            time.sleep(6)
             self.genieTalk("상담을 계속 진행하고 싶으시면 원하시는 서비스를 수어로 입력해주시고, 종료하시고 싶으시면 종료버튼을 눌러주세요.")
 
     def serviceJoin(self):
@@ -98,7 +99,7 @@ class Camera(threading.Thread):
         if (not have_this):
             self.genieTalk("몇 월 요금제를 조회하시겠어요? (숫자 두 번)")
             month = list()
-            time.sleep(2)
+            time.sleep(4)
             self.recordVideo(5)
             result_data = restApi.uploadVideo(self.file_name, "num")
             self.customTalk(result_data)
@@ -151,6 +152,22 @@ class Camera(threading.Thread):
         password.append(result_data)
         
         self.genieTalk("이번 달 납부하실 금액은 65,000원입니다. 등록하신 카드로 결제 완료되었습니다. 감사합니다.")
+        
+    def serviceOffice(self):
+        self.genieTalk("어떤 대리점의 위치를 확인하시겠어요?\n1번 인천 지점\n2번 대전 지점\n3번 광주 지점\n확인하시고 싶은 대리점 위치를 번호로 입력해주세요.")
+        time.sleep(5)
+        self.recordVideo(5)
+        result_data = restApi.uploadVideo(self.file_name, "num")
+        office_dict = {'1': 'incheon', '2': 'daejeon', '3': 'kwangju'}
+        
+        if (result_data not in office_dict):
+            self.genieTalk("죄송해요. 무슨 말씀인지 못 알아들었어요.")
+            return
+        
+        GM.openMap(office_dict[result_data])
+            
+        self.genieTalk("해당 대리점의 위치를 인터넷 창으로 띄워드렸어요.")
+        
         
     def genieTalk(self, text: str):
         self.signal_ob.emit("appendTextDeaf", "헬프지니: "+text)

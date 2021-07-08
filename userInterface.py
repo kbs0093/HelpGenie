@@ -79,10 +79,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.repaint()
         
     def action(self):
-        self.genie_ob = genie.GenieVoice("strToVoice", "안녕하세.")
+        self.genie_ob = genie.GenieVoice("strToVoice", "안녕하세요. 수어를 이해하는 AI 고객센터 헬프지니에요. 시각장애인분들은 5초 대기를. 청각장애인분들은 상담 시작 버튼을 눌러주세요.")
         self.genie_ob.start()
         #genie_ob.join()
-        self.timer.start(4000)
+        self.timer.start(15000)
         
         
 class StartLayer(QtWidgets.QWidget):
@@ -152,7 +152,7 @@ class DeafLayer(QtWidgets.QWidget):
         # 종료 버튼
         self.btn_exit = QtWidgets.QPushButton(self)
         self.btn_exit.setGeometry(QtCore.QRect(1100, 20, 150, 40))
-        self.btn_exit.setStyleSheet("font: 11pt '맑은 고딕';"
+        self.btn_exit.setStyleSheet("font: 13pt '맑은 고딕';"
                                     "color: rgb(255, 255, 255);"
                                     "font-weight: bold;"
                                     "border-style: solid;"
@@ -174,7 +174,7 @@ class DeafLayer(QtWidgets.QWidget):
         self.text_counselor.setStyleSheet("background-color: rgb(255, 255, 255);"
                                           "border-style: solid;"
                                           "border-width: 2px;"
-                                          "font: 12pt '맑은 고딕';"
+                                          "font: 16pt '맑은 고딕';"
                                           "font-weight: bold;")
 
         # 가운데 라인 (paint 처리)
@@ -197,7 +197,7 @@ class DeafLayer(QtWidgets.QWidget):
         self.text_customer.setStyleSheet("background-color: rgb(255, 255, 255);"
                                          "border-style: solid;"
                                          "border-width: 2px;"
-                                         "font: 12pt '맑은 고딕';"
+                                         "font: 16pt '맑은 고딕';"
                                          "font-weight: bold;")
 
     @pyqtSlot(QtGui.QImage)
@@ -286,7 +286,7 @@ class BlindLayer(QtWidgets.QWidget):
         self.text_dialog.setStyleSheet("background-color: rgb(255, 255, 255);"
                                           "border-style: solid;"
                                           "border-width: 2px;"
-                                          "font: 12pt '맑은 고딕';"
+                                          "font: 20pt '맑은 고딕';"
                                           "font-weight: bold;")
         
     @pyqtSlot(str)
