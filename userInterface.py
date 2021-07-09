@@ -1,35 +1,37 @@
+#########################
+#### 메인 프로그램 파일 ####
+#########################
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 
 import genie
 import CameraStream
 
-data_deliv = None
 
-
+# UI 윈도우 창 클래스
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.current_widget = None  # 현재 출력할 화면
         self.setupInterface()
-        self.genie_ob = None # 이 레이어에서 사용할 지니 스레드 객체
+        self.genie_ob = None  # 이 클래스에서 사용할 지니 스레드 객체
+        # 5초 입력 없을 시 시각장애인 UI로 변경
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(lambda: self.changeLayer(BlindLayer(self.central_widget), 1280, 720))
         self.timer.setSingleShot(True)
         self.action()
 
-        # btn connect
+        # 버튼 콜백 함수 연결
         self.btn_start.clicked.connect(lambda: self.changeLayer(DeafLayer(self.central_widget), 1280, 720))
         self.btn_exit.clicked.connect(QtCore.QCoreApplication.quit)
-        
-        
-        
+
+    # UI 객체 생성 함수
     def setupInterface(self):
         self.setWindowTitle("Help Genie Project :)")
         center_point = QtWidgets.QDesktopWidget().availableGeometry().center()
-        self.setGeometry(center_point.x() - 800/2, center_point.y() - 600/2, 800, 600)
-        #self.resize(800, 600)
+        self.setGeometry(center_point.x() - 800 / 2, center_point.y() - 600 / 2, 800, 600)  # 윈도우 창 사이징
 
+        # 배경 중심 레이어
         self.central_widget = QtWidgets.QWidget(self)
         self.central_widget.setStyleSheet("background-color: rgb(149, 228, 223)")
         self.setCentralWidget(self.central_widget)
@@ -60,8 +62,9 @@ class MainWindow(QtWidgets.QMainWindow):
                                     "background-color: rgb(47, 186, 181);")  # 85 134 125
         self.btn_exit.setText("종료하기")
 
-    def changeLayer(self, new_widget, x, y):
-        # timer kill
+    # 윈도우 내 레이어 창 변경 함수
+    def changeLayer(self, new_widget, x, y):  # 새로 들어올 레이어, 윈도우 창 width, height
+        # 5초 대기 timer kill
         self.timer.stop()
         self.timer.deleteLater()
         ##
@@ -73,23 +76,26 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.resize(x, y)
         center_point = QtWidgets.QDesktopWidget().availableGeometry().center()
-        self.setGeometry(center_point.x() - x/2, center_point.y() - y/2, x, y)
+        self.setGeometry(center_point.x() - x / 2, center_point.y() - y / 2, x, y)
 
         self.current_widget.show()
         self.repaint()
-        
+
+    # 현재 레이어 백그라운드에서 동작할 기능을 실행하는 함수
     def action(self):
-        self.genie_ob = genie.GenieVoice("strToVoice", "안녕하세요. 수어를 이해하는 AI 고객센터 헬프지니에요. 시각장애인분들은 5초 대기를. 청각장애인분들은 상담 시작 버튼을 눌러주세요.")
-        self.genie_ob.start()
-        #genie_ob.join()
+        self.genie_ob = genie.GenieVoice("strToVoice",
+                                         "안녕하세요. 수어를 이해하는 AI 고객센터 헬프지니에요. 시각장애인분들은 5초 대기를. 청각장애인분들은 상담 시작 버튼을 눌러주세요.")
+        self.genie_ob.start()  # 지니 스레드 실행
         self.timer.start(15000)
-        
-        
+
+
+# 메인 시작 UI 레이어 클래스
 class StartLayer(QtWidgets.QWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.setupInterface()
 
+    # UI 객체 생성 함수
     def setupInterface(self):
         self.setGeometry(QtCore.QRect(0, 0, 800, 600))
 
@@ -114,17 +120,19 @@ class StartLayer(QtWidgets.QWidget):
         self.label_genie.setGeometry(80, 150, 520, 230)
 
 
+# 청각장애인 서비스 UI 클래스
 class DeafLayer(QtWidgets.QWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.setupInterface()
-        self.camera_ob = None
-        
-        # btn connect
+        self.camera_ob = None # 이 UI에서 사용할 카메라 관련 스레드 객체
+
+        # 버튼 콜백 함수 연결
         self.btn_exit.clicked.connect(self.exit)
-        
+
         self.action()
 
+    # UI 객체 생성 함수
     def setupInterface(self):
         self.setGeometry(QtCore.QRect(0, 0, 1280, 720))
 
@@ -148,7 +156,7 @@ class DeafLayer(QtWidgets.QWidget):
                                         "font: 28pt '맑은 고딕';"
                                         "font-weight: bold;")
         self.label_title1.setText("Help Genie")
-        
+
         # 종료 버튼
         self.btn_exit = QtWidgets.QPushButton(self)
         self.btn_exit.setGeometry(QtCore.QRect(1100, 20, 150, 40))
@@ -166,7 +174,6 @@ class DeafLayer(QtWidgets.QWidget):
         self.label_kori = QtWidgets.QLabel(self)
         self.label_kori.setPixmap(self.img_tmp)
         self.label_kori.setGeometry(150, 70, 343, 454)
-        
 
         # 상담사 안내 문구
         self.text_counselor = QtWidgets.QTextBrowser(self)
@@ -177,8 +184,6 @@ class DeafLayer(QtWidgets.QWidget):
                                           "font: 16pt '맑은 고딕';"
                                           "font-weight: bold;")
 
-        # 가운데 라인 (paint 처리)
-        
         # 토리
         self.img_tmp = QtGui.QPixmap('image/tori.png')
         self.label_tori = QtWidgets.QLabel(self)
@@ -189,7 +194,6 @@ class DeafLayer(QtWidgets.QWidget):
         self.label_recording = QtWidgets.QLabel(self)
         self.label_recording.setGeometry(760, 70, 400, 500)
         self.label_recording.hide()
-        
 
         # 고객 문구
         self.text_customer = QtWidgets.QTextBrowser(self)
@@ -200,18 +204,22 @@ class DeafLayer(QtWidgets.QWidget):
                                          "font: 16pt '맑은 고딕';"
                                          "font-weight: bold;")
 
+    # 녹화 영상 프레임 갱신 함수 (슬롯)
     @pyqtSlot(QtGui.QImage)
     def printImage(self, image):
         self.label_recording.setPixmap(QtGui.QPixmap.fromImage(image))
-    
+
+    # 상담사 대화창 텍스트 추가 함수 (슬롯)
     @pyqtSlot(str)
     def appendTextDeaf(self, text):
         self.text_counselor.append(text)
-        
+
+    # 고객 대화창 텍스트 추가 함수 (슬롯)
     @pyqtSlot(str)
     def appendTextDeaf2(self, text):
         self.text_customer.append(text)
-        
+
+    # 녹화 시작시, 토리 -> 녹화화면 전환 함수 (슬롯)
     @pyqtSlot(bool)
     def startRecord(self, is_start):
         if is_start:
@@ -220,45 +228,49 @@ class DeafLayer(QtWidgets.QWidget):
         else:
             self.label_recording.hide()
             self.label_tori.show()
-            
+
+    # 카메라 스레드 객체 종료 함수
     def exit(self):
         import sys
         print("wait camera thread quiting...")
         self.camera_ob.is_on = False
         self.camera_ob.nonDefine()
         sys.exit()
-       
+
+    # 현재 레이어 백그라운드에서 동작할 기능을 실행하는 함수
     def action(self):
         self.camera_ob = CameraStream.Camera("counsel")
         self.camera_ob.setSignal(self)
         self.camera_ob.start()
-        
-    def paintEvent(self, paint_event):  # 자동 호출 함수
+
+    # 자동 호출 함수 (오버라이딩)
+    def paintEvent(self, paint_event):
         painter = QtGui.QPainter(self)
 
         # 가운데 라인
         painter.setPen(QtGui.QPen(QtGui.QColor(47, 186, 181), 6))
         painter.drawLine(640, 60, 640, 660)  # length: 600
-        
 
 
+# 시각장애인 서비스 UI 클래스
 class BlindLayer(QtWidgets.QWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.setupInterface()
-        self.genie_ob = None # 이 레이어에서 사용할 지니 스레드 객체
-        
+        self.genie_ob = None  # 이 레이어에서 사용할 지니 스레드 객체
+
         self.action()
 
+    # UI 객체 생성 함수
     def setupInterface(self):
         self.setGeometry(QtCore.QRect(0, 0, 1280, 720))
-        
+
         # KT 로고
         self.img_kt = QtGui.QPixmap('image/kt.png')
         self.label_kt = QtWidgets.QLabel(self)
         self.label_kt.setPixmap(self.img_kt)
         self.label_kt.setGeometry(1200, 640, 80, 80)
-        
+
         # 아이콘
         self.img_icon = QtGui.QPixmap('image/icon.png')
 
@@ -284,15 +296,17 @@ class BlindLayer(QtWidgets.QWidget):
         self.text_dialog = QtWidgets.QTextBrowser(self)
         self.text_dialog.setGeometry(QtCore.QRect(750, 160, 400, 400))
         self.text_dialog.setStyleSheet("background-color: rgb(255, 255, 255);"
-                                          "border-style: solid;"
-                                          "border-width: 2px;"
-                                          "font: 20pt '맑은 고딕';"
-                                          "font-weight: bold;")
-        
+                                       "border-style: solid;"
+                                       "border-width: 2px;"
+                                       "font: 20pt '맑은 고딕';"
+                                       "font-weight: bold;")
+
+    # 고객 대화창 텍스트 추가 (슬롯)
     @pyqtSlot(str)
     def appendTextBlind(self, text):
         self.text_dialog.append(text)
-  
+
+    # 현재 레이어 백그라운드에서 동작할 기능을 실행하는 함수
     def action(self):
         self.genie_ob = genie.GenieVoice("voiceCounsel")
         self.genie_ob.setSignal(self)

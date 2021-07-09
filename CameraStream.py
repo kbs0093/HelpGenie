@@ -8,52 +8,53 @@ import dialogFlow
 import geoMaster as GM
 
 
-
-#녹화화면 송출은 계속 되고, 파일 단위로 끊는 것은 텍스트로 안내하고, 몇 초간..
-
 class Camera(threading.Thread):
     def __init__(self, function_name, *parameter):
         threading.Thread.__init__(self)
         self.is_on = True
         self.function_name = function_name
         self.parameter = parameter
-        self.signal_ob = signal.Signal()
-        self.file_name = 'sign.avi'
-        
+        self.signal_ob = signal.Signal() # 시그널 객체
+        self.file_name = 'sign.avi' # 녹화하여 서버에 전송할 파일
+
+    # UI 쪽에서 자기자신 객체를 sinal에 넘겨 메소드를 등록하는 함수
     def setSignal(self, class_ob):
         self.signal_ob = signal.Signal()
         self.signal_ob.registSignal(class_ob)
-        
+
+    # 스레드 실행시 호출되는 함수
     def run(self):
+        # 이 클래스 내 메소드를 동적으로 호출하여 처리
         self.return_val = eval("self.{}(*self.parameter)".format(self.function_name))
-        
+
+    # 청각장애인 고객 서비스 상담 시작 함수
     def counsel(self):
         self.genieTalk("이 서비스는 청각장애인분들을 위한 화면이에요. 원하시는 서비스를 수어로 입력해주세요.")
         
         while self.is_on:
             time.sleep(4)
+            # 수어 영상 녹화
             self.recordVideo(12)
-            # 영상을 서버 전송
-            
+
+            # 서버로 녹화 영상을 파일로 전송 및 수어 해석 문자열 받기
             result_data = restApi.uploadVideo(self.file_name, "upload")
             self.customTalk(result_data)
-            # 서버로부터 결과값 받기
-            # 결과값을 바탕으로 서비스 제공
+            # 받은 문자열을 자연어 처리하여 핵심 키워드 추출
             keyword = dialogFlow.detect_intent_texts(result_data)
             print("keyword: {}".format(keyword))
-            
-            
-            if (keyword == "가입"): # 테스트 완료
+
+            # 핵심 키워드를 바탕으로 서비스 분기
+            if (keyword == "가입"):
                 self.serviceJoin()
-            elif (keyword == "조회"): # 테스트 완료
+            elif (keyword == "조회"):
                 self.serviceCheck(False)
-            elif (keyword == "이번달 조회"): # 테스트 완료
+            elif (keyword == "이번달 조회"):
                 self.serviceCheck(True)
-            elif (keyword == "서비스 조회"): # 잘 안됨 (service1)
+            elif (keyword == "서비스 조회"):
                 self.serviceService()
-            elif (keyword == "변경"): # 테스트 완료
+            elif (keyword == "변경"):
                 self.serviceChange()
-            elif (keyword == "납부"): # 테스트 완료
+            elif (keyword == "납부"):
                 self.servicePay()
             elif (keyword == "대리점"):
                 self.serviceOffice()
@@ -64,24 +65,19 @@ class Camera(threading.Thread):
             time.sleep(6)
             self.genieTalk("상담을 계속 진행하고 싶으시면 원하시는 서비스를 수어로 입력해주시고, 종료하시고 싶으시면 종료버튼을 눌러주세요.")
 
+    # 신규 가입 기능 메소드
     def serviceJoin(self):
         self.genieTalk("가입절차를 시작하겠습니다. 가입정보를 입력해주세요. (숫자 두 번)")
-        birth = list()
         time.sleep(2)
         self.recordVideo(5)
         result_data = restApi.uploadVideo(self.file_name, "num")
         self.customTalk(result_data)
-        birth.append(result_data)
         time.sleep(2)
         self.recordVideo(5)
         result_data = restApi.uploadVideo(self.file_name, "num")
-        birth.append(result_data)
         self.customTalk(result_data)
         
-        self.genieTalk("어떤 요금제를 이용하시겠어요? 수어 번호로 입력해주세요.")
-        self.genieTalk("1. 55 요금제")
-        self.genieTalk("2. 시즌 초이스 요금제")
-        self.genieTalk("3. 슈퍼 플랜 요금제")
+        self.genieTalk("어떤 요금제를 이용하시겠어요? 수어 번호로 입력해주세요.\n1. 55 요금제\n2. 시즌 초이스 요금제\n3. 슈퍼 플랜 요금제")
         time.sleep(5)
         self.recordVideo(5)
         result_data = restApi.uploadVideo(self.file_name, "num")
@@ -94,9 +90,10 @@ class Camera(threading.Thread):
             return
         
         self.genieTalk("{}번 {} 요금제를 선택하셨습니다. 가입이 완료되었습니다. 감사합니다.".format(choice_num, choice_dict[choice_num]))
-    
+
+    # 휴대폰 요금제 조회 기능 메소드
     def serviceCheck(self, have_this):
-        if (not have_this):
+        if (not have_this): # "이번 달 조회" 와 구분하기 위해 사용
             self.genieTalk("몇 월 요금제를 조회하시겠어요? (숫자 두 번)")
             month = list()
             time.sleep(4)
@@ -112,13 +109,15 @@ class Camera(threading.Thread):
             self.genieTalk("고객님께서 {}월 납부하실 금액은 65,000원 입니다.".format(month_result))
         else:
             self.genieTalk("고객님께서 7월 납부하실 금액은 65,000원 입니다.")
-        
+
+    # 서비스 조회 기능 메소드
     def serviceService(self):
         self.genieTalk("고객님이 가입하신 서비스는 다음과 같습니다.")
         self.genieTalk("1. KT Seezn 서비스")
         self.genieTalk("2. 링투유 서비스")
         self.genieTalk("3. 지니 뮤직 서비스")
-        
+
+    # 요금제 변경 기능 메소드
     def serviceChange(self):
         self.genieTalk("변경하실 요금제를 수어 번호로 입력해주세요. (숫자 한 번)")
         self.genieTalk("1. 55 요금제")
@@ -136,23 +135,22 @@ class Camera(threading.Thread):
             return
         
         self.genieTalk("{}번 {} 요금제를 선택하셨습니다. 요금제 변경이 완료되었습니다. 감사합니다.".format(choice_num, choice_dict[choice_num]))
-        
+
+    # 요금제 납부 기능 메소드
     def servicePay(self):
         self.genieTalk("등록하신 카드 비밀번호 두 자리를 입력해주세요. (숫자 두 번)")
-        password = list()
         time.sleep(2)
         self.recordVideo(5)
         result_data = restApi.uploadVideo(self.file_name, "num")
         self.customTalk(result_data)
-        password.append(result_data)
         time.sleep(2)
         self.recordVideo(5)
         result_data = restApi.uploadVideo(self.file_name, "num")
         self.customTalk(result_data)
-        password.append(result_data)
         
         self.genieTalk("이번 달 납부하실 금액은 65,000원입니다. 등록하신 카드로 결제 완료되었습니다. 감사합니다.")
-        
+
+    # 대리점 위치 조회 기능 메소드 (Geomaster)
     def serviceOffice(self):
         self.genieTalk("어떤 대리점의 위치를 확인하시겠어요?\n1번 인천 지점\n2번 대전 지점\n3번 광주 지점\n확인하시고 싶은 대리점 위치를 번호로 입력해주세요.")
         time.sleep(5)
@@ -168,15 +166,17 @@ class Camera(threading.Thread):
             
         self.genieTalk("해당 대리점의 위치를 인터넷 창으로 띄워드렸어요.")
         
-        
+    # 헬프지니(상담사) 대화창 텍스트 추가
     def genieTalk(self, text: str):
         self.signal_ob.emit("appendTextDeaf", "헬프지니: "+text)
-        
+
+    # 고객 대화창 텍스트 추가
     def customTalk(self, text: str):
         self.signal_ob.emit("appendTextDeaf2", "고객님: "+text)
-        
+
+    # 수어 입력 영상 녹화 메소드
     def recordVideo(self, time_sec):
-        # change record ui
+        # 녹화 화면으로 전환
         self.signal_ob.emit("startRecord", True)
         # record start
         cap = cv2.VideoCapture(0)
@@ -191,7 +191,7 @@ class Camera(threading.Thread):
             
             if ret:
                 out.write(frame)
-                    
+                # 캡쳐한 프레임을 UI로 구성하기 위해 convert하는 과정
                 rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 h, w, ch = rgb_image.shape
                 bytes_per_line = ch * w
@@ -203,5 +203,5 @@ class Camera(threading.Thread):
         cap.release()
         out.release()
         
-        # change tori ui
+        # 녹화 화면 끝 (토리 띄우기)
         self.signal_ob.emit("startRecord", False)

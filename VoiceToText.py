@@ -6,7 +6,6 @@ import gigagenieRPC_pb2_grpc
 import MicrophoneStream as MS
 import user_auth as UA
 import audioop
-import os
 from ctypes import *
 
 HOST = 'gate.gigagenie.ai'

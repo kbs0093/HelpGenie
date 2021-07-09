@@ -1,91 +1,20 @@
-import VoiceToText
-import MicrophoneStream as MS
-import TextToVoice
-import audioop
-from ctypes import *
-import RPi.GPIO as GPIO
-import ktkws
-import cv2
-import GenieButton
-import CameraStream as CS
-import VideoPlay as VP
-
+#########################
+#### 메인 프로그램 파일 ####
+#########################
 import userInterface as ui
 import sys
-import threading
-import time
-
-KWSID = ['오늘', '지니야', '친구야', '자기야', 'help지니']
-RATE = 16000
-CHUNK = 512
-
-
-def detect():
-    with MS.MicrophoneStream(RATE, CHUNK) as stream:
-        audio_generator = stream.generator()
-
-        for content in audio_generator:
-
-                rc = ktkws.detect(content)
-                rms = audioop.rms(content,2)
-                #print('audio rms = %d' % (rms))
-
-                if (rc == 1):
-                        MS.play_file("./Data/sample_sound.wav")
-                        return 200
-                
-def initHelpGenie(key_word = '오늘'):
-    rc = ktkws.init("./Data/kwsmodel.pack")
-
-    print ('init rc = %d' % (rc))
-    rc = ktkws.start()
-    print ('start rc = %d' % (rc))
-    print ('\n호출어를 불러보세요~\n')
-    ktkws.set_keyword(KWSID.index(key_word))
-    rc = detect()
-    print ('detect rc = %d' % (rc))
-    print ('\n\n호출어가 정상적으로 인식되었습니다.\n\n')
-    ktkws.stop()
-    return rc
-    
-def btn_test(key_word = 'help지니'):
-    global btn_status
-    rc = ktkws.init("../data/kwsmodel.pack")
-    print ('init rc = %d' % (rc))
-    rc = ktkws.start()
-    print ('start rc = %d' % (rc))
-    print ('\n버튼을 눌러보세요~\n')
-    ktkws.set_keyword(KWSID.index(key_word))
-    rc = GenieButton.btn_detect()
-    print ('detect rc = %d' % (rc))
-    print ('\n\n호출어가 정상적으로 인식되었습니다.\n\n')
-    ktkws.stop()
-    return rc
-    
 
 
 def initService():
-    # UI 출력
+    # UI 화면 출력
     app = ui.QtWidgets.QApplication([""])
     window = ui.MainWindow()
     window.show()
-    #time_th.start()
     sys.exit(app.exec_())
-    
-    
-    
-    #fileName = 'handSignal.avi'
-    
-    #VP.VideoPlay(fileName)
     
 
 def main():
     initService()
-    
-    
-    #VP.VideoPlay(fileName)
-
-    
 
 
 if __name__ == '__main__':
